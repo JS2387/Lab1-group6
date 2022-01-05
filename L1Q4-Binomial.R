@@ -53,8 +53,8 @@ options(digits = 22)
 # 
 # plot_ly(x = binom_coeff$n, y = binom_coeff$k, z = binom_coeff$A, type = "scatter3d", mode = "markers")
 
-sample_n <- seq(0, 1000, by = 5)
-sample_k <- seq(0, 1000, by = 5)
+sample_n <- seq(0, 20000, by = 100)
+sample_k <- seq(0, 20000, by = 100)
 
 mat_A <- matrix(NA, nrow = length(sample_n), ncol = length(sample_k))
 for (i in 1:length(sample_n)) {

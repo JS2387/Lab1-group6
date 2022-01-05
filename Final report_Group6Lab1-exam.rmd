@@ -1,11 +1,6 @@
 ---
-title: "Computational Statistics Lab 1 Report Group 6"
-author: {Jaskirat S Marar (jasma356), 
-Filip Berndtsson (filbe354), 
-Dinuke Jayaweera (dinja628), 
-Raja Uzair Saeed (rajsa233), 
-Mucahit Sahin (mucsa806)}
-date: "11/9/2021"
+title: "Lab 1"
+
 output: pdf_document
 ---
 
@@ -15,15 +10,6 @@ options(digits = 22)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Collaboration Statement
-
-This lab report had 4 questions which were tackled by all group members equally. More precisely, the division of duties was as follows:
-
-1. Problem 1: Mucahit Sahin & Jaskirat Marar
-2. Problem 2: Dinuke jayaweera & Filip Berndtsson
-3. Problem 3: Raja Uzair Saeed , Jaskirat Marar & Filip Berndtsson
-4. Problem 4: Jaskirat Marar & Filip Berndtsson
-5. Report compilation: Jaskirat M (main compiler) & others (individual collaborators)
 
 # Problem 1
 
@@ -132,7 +118,7 @@ var(vec_x)
 
 ## 3. For each subset X~*i*~ = {x~1~, ... , x~*i*~}, i = 1,..., 10000 compute the difference Y~*i*~ = myvar(X~*i*~)-var(X~*i*~), where var(X~*i*~) is the standard variance estimation function in R. Plot the dependence Y~*i*~ on *i*. Draw conclusions from this plot. How well does your function work? Can you explain the behaviour?
 
-``` {r, echo = FALSE}
+``` {r}
 
 myvar <- function(x) {
   n <- length(x)
@@ -266,7 +252,7 @@ rownames(mat_C) <- sample_n
 
 To represent this better, we use the following results from our 3 computations:
 
-```{r, echo = FALSE}
+```{r}
 sample_n <- seq(0, 1000, by = 5)
 sample_k <- seq(0, 1000, by = 5)
 
@@ -350,102 +336,3 @@ Next, we see the results of B and while B increases the flexibility of A and can
 Moving onto C, It is easily the most flexible of the 3, implying that the it gives a result for every combination of n & k. The reason for this is quite obvious that the vector being passed to prod() is never leading to an overflow as the division results in the cancellations that eliminate large numbers that can lead to overflow condition.
 
 As a result we can conclude that computations due to A & B expressions have overflow issues whereas C doesn't. Between A & B, it is actually B where more cases of overflow are occurring.It is interesting to note though, that C does face the additional issues related to rounding. because, when the values of n & k become moderately large, there is a propagation of rounding errors and hence we are given an approximated value that is different from the expected value of the expression.
-
-
-
-# APPENDIX
-
-The code for the plots generated in the report is as follows:
-
-```{r results='hide'}
-# Plot for PROBLEM3.3
-myvar <- function(x) {
-  n <- length(x)
-  variance <- 1/(n-1)*(sum(x^2) - 1/n*(sum(x)^2))
-  return(variance)
-}
-x <- rnorm(n = 10000, mean = 10^8, sd = 1)
-y<- c()
-for (i in 1:length(x)) {
-  y[i] = myvar(x[1:i]) - var(x[1:i])
-} 
-i = 1:10000
-ggplot() + 
-  geom_point(aes(x = i, y = y, color = "red"))
-
-
-# Plots for PROBLEM4.3
-sample_n <- seq(0, 1000, by = 5)
-sample_k <- seq(0, 1000, by = 5)
-
-mat_A <- matrix(NA, nrow = length(sample_n), ncol = length(sample_k))
-for (i in 1:length(sample_n)) {
-  for (j in 1:length(sample_k)) {
-    if (sample_k[j] <= sample_n[i]) {
-      mat_A[i,j] = prod(1:sample_n[i]) / (prod(1:sample_k[j]) * prod(1:(sample_n[i] - sample_k[j])))
-    }
-  }
-}
-colnames(mat_A) <- sample_k
-rownames(mat_A) <- sample_n
-
-mat_B <- matrix(NA, nrow = length(sample_n), ncol = length(sample_k))
-for (i in 1:length(sample_n)) {
-  for (j in 1:length(sample_k)) {
-    if (sample_k[j] <= sample_n[i]) {
-      mat_B[i,j] = prod((sample_k[j] + 1):sample_n[i]) / (prod(1:(sample_n[i] - sample_k[j])))
-    }
-  }
-}
-colnames(mat_B) <- sample_k
-rownames(mat_B) <- sample_n
-
-mat_C <- matrix(NA, nrow = length(sample_n), ncol = length(sample_k))
-for (i in 1:length(sample_n)) {
-  for (j in 1:length(sample_k)) {
-    if (sample_k[j] <= sample_n[i]) {
-      mat_C[i,j] = prod(((sample_k[j] + 1):sample_n[i]) / (1:(sample_n[i] - sample_k[j])))
-    }
-  }
-}
-colnames(mat_C) <- sample_k
-rownames(mat_C) <- sample_n
-
-mat_elements = 201*201
-
-na_count_A <- sum(is.na(mat_A))   
-inf_count_A <- sum(is.infinite(mat_A)) 
-nan_count_A <- sum(is.nan(mat_A))
-result_count_A <- mat_elements - na_count_A - inf_count_A
-# n_max_A <- 170
-# k_max_A <- 165
-
-na_count_B <- sum(is.na(mat_B))   
-inf_count_B <- sum(is.infinite(mat_B)) 
-nan_count_B <- sum(is.nan(mat_B))
-result_count_B <- mat_elements - na_count_B - inf_count_B
-# n_max_B <- 1000
-# k_max_B <- 995
-
-na_count_C <- sum(is.na(mat_C))   
-inf_count_C <- sum(is.infinite(mat_C)) 
-nan_count_C <- sum(is.nan(mat_C))
-result_count_C <- mat_elements - na_count_C - inf_count_C
-# n_max_C <- 1000
-# k_max_C <- 995
-
-vis_df <- data.frame(fields = c("result_count", "inf_count", "NaN_count"),
-                     A = c(result_count_A, inf_count_A, nan_count_A),
-                     B = c(result_count_B, inf_count_B, nan_count_B),
-                     C = c(result_count_C, inf_count_C, nan_count_C))
-
-vis_df_1 <- tidyr::gather(vis_df, key = "fields", value =  "formula", 2:4)
-
-
-p1 <- ggplot(vis_df, aes(fields, A)) + geom_bar(stat='identity')
-p2 <- ggplot(vis_df, aes(fields, B)) + geom_bar(stat='identity')
-p3 <- ggplot(vis_df, aes(fields, C)) + geom_bar(stat='identity')
-p1
-p2
-p3 
-```
